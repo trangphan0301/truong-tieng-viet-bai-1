@@ -4,12 +4,15 @@ Mỗi dòng là một đoạn Trâu Con nói. Thu âm (hoặc xuất từ công 
 
 Giọng: bé trai, phát âm chuẩn, nhẹ nhàng, trầm ấm, tròn vành rõ chữ, đọc chậm rãi. Trâu Con luôn xưng “mình”, gọi học sinh là “các bạn”.
 
-Tổng cộng: **134 đoạn**.
+**Ưu tiên thu trước** phần “Các tiếng trong trò chơi” và “Tên 6 thanh”: trò Đội dấu cho chữ cần nghe đúng thanh của la, là, lá, lạ, lả, lã và ma, mà, má, mạ, mả, mã.
 
-## Lời thoại của Trâu Con (44)
+Tổng cộng: **135 đoạn**.
+
+## Lời thoại của Trâu Con (45)
 
 | Tên file | Trâu Con nói |
 |---|---|
+| `loi-check.mp3` | Xin chào các bạn! Các bạn có nghe thấy mình nói không? |
 | `loi-welcome.mp3` | Chào các bạn! Mình là Trâu Con. Hôm nay mình cùng các bạn học Bài 1: bảng chữ cái, nguyên âm và phụ âm nhé! |
 | `loi-menu.mp3` | Các bạn chọn một trò chơi để bắt đầu nhé! |
 | `loi-ok1.mp3` | Đúng rồi! |

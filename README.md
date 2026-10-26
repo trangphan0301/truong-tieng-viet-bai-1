@@ -35,6 +35,12 @@ Trâu Con luôn xưng **“mình”** và gọi học sinh là **“các bạn�
 
 Hiện tại trò chơi dùng **giọng đọc tiếng Việt có sẵn trên máy**, đọc chậm (tốc độ 0,82). Nếu máy không phát ra tiếng, trò chơi hiện lời nhắc kiểm tra âm lượng và chế độ im lặng. Nếu máy có giọng nam (ví dụ “NamMinh” trên Microsoft Edge), trò chơi chọn giọng đó và nâng cao giọng một chút cho giống giọng bé trai. Giọng thật sự nghe ra sao tùy thiết bị: iPad thường chỉ có giọng nữ “Linh”.
 
+### Khi không nghe thấy tiếng
+
+Trang chính có nút **Kiểm tra âm thanh**: bấm vào để biết máy có giọng đọc tiếng Việt không và Trâu Con có phát ra tiếng không. Trên iPad, giọng đọc của máy bị tắt khi bật chế độ **Im lặng** hoặc **Không làm phiền** (trong Trung tâm điều khiển), dù đã tăng âm lượng. Nên mở trò chơi bằng **Safari**.
+
+File ghi âm (mục dưới) phát qua trình phát âm thanh của trình duyệt, nên vẫn nghe được khi iPad đang ở chế độ Im lặng. Đây là cách chắc chắn nhất để lớp nào cũng nghe được Trâu Con.
+
 ### Thay bằng đúng giọng trong video của Trâu Con
 
 1. Mở file [AM-THANH.md](AM-THANH.md): đó là danh sách mọi câu Trâu Con nói, kèm tên file cần đặt.

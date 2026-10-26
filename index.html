@@ -106,6 +106,14 @@ button{font-family:inherit; color:inherit}
 .hero h1{margin:0 0 14px; font:800 clamp(30px,5vw,50px)/1.05 var(--font-display); color:var(--charcoal); text-wrap:balance}
 .hero .bubble{font-size:19px; line-height:1.4; max-width:560px}
 .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:16px}
+.check{margin:0 0 16px; max-width:680px; background:var(--card); border:2.5px solid var(--line); border-radius:18px; padding:12px 16px; font-size:15.5px}
+.check ul{margin:0; padding:0; list-style:none; display:grid; gap:6px}
+.check ul li{display:flex; gap:8px; align-items:baseline}
+.check .k{flex:none; width:1.4em; text-align:center; font-weight:900}
+.check .ok{color:var(--ok)} .check .bad{color:var(--peach-ink)} .check .wait{color:var(--ink-soft)}
+.check ol{margin:10px 0 0; padding-left:1.3em; color:var(--ink); display:grid; gap:4px}
+.check h3{margin:12px 0 0; font:800 16px/1.2 var(--font-display); color:var(--charcoal)}
+.hero-actions{align-items:center}
 .voice-note{margin:12px 0 0; max-width:560px; font-size:14.5px; color:var(--peach-ink); background:var(--peach); border-radius:14px; padding:10px 14px}
 .menu-title{margin:8px 0 12px; font:800 24px/1.1 var(--font-display); color:var(--charcoal)}
 .cards{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
@@ -347,10 +355,12 @@ button{font-family:inherit; color:inherit}
           <div class="bubble talk" id="heroBubble"><span>Chào các bạn! Mình là Trâu Con. Hôm nay mình cùng các bạn học Bài 1 nhé!</span><button class="say-btn" id="btnSayHero" type="button" aria-label="Nghe Trâu Con chào"></button></div>
           <div class="hero-actions">
             <button class="btn" id="btnStart" type="button">Bắt đầu chơi ›</button>
+            <button class="btn ghost small" id="btnCheck" type="button">Kiểm tra âm thanh</button>
           </div>
           <p class="voice-note" id="voiceNote" hidden></p>
         </div>
       </div>
+      <div class="check" id="checkPanel" hidden aria-live="polite"></div>
       <h2 class="menu-title" id="menuTitle">Chọn trò chơi</h2>
       <div class="cards" id="cards"></div>
     </section>
@@ -488,6 +498,7 @@ const WORD_PIC = { 'đu đủ':'papaya', 'trâu':'trau', 'nhà':'house', 'cặp'
 const TONE_SETS = [['la','là','lá','lạ','lả','lã'], ['ma','mà','má','mạ','mả','mã']];
 
 const PHRASES = {
+  'check': 'Xin chào các bạn! Các bạn có nghe thấy mình nói không?',
   'welcome': 'Chào các bạn! Mình là Trâu Con. Hôm nay mình cùng các bạn học Bài 1: bảng chữ cái, nguyên âm và phụ âm nhé!',
   'menu': 'Các bạn chọn một trò chơi để bắt đầu nhé!',
   'ok1': 'Đúng rồi!', 'ok2': 'Giỏi quá!', 'ok3': 'Các bạn làm tốt lắm!', 'ok4': 'Tuyệt vời!', 'ok5': 'Chính xác!',
@@ -650,12 +661,21 @@ const Speech = (() => {
     if (wasBusy) await new Promise(r => setTimeout(r, 60));
     for (const c of chunks(ids)) { if (my !== token) return; await speakText(c, my); }
   }
-  return { say, stop, unlock, textOf, get hasVi() { return hasVi; }, get voicesKnown() { return voicesKnown; }, get hasRecordings() { return !!files; }, get supported() { return !!synth; }, get heard() { return heard; } };
+  return { say, stop, unlock, textOf, get hasVi() { return hasVi; }, get voicesKnown() { return voicesKnown; }, get hasRecordings() { return !!files; }, get supported() { return !!synth; }, get heard() { return heard; }, get voiceName() { return voice ? voice.name : ''; } };
 })();
 const SILENT_WAV = (() => {
   const b = new ArrayBuffer(46), v = new DataView(b); const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
   w(0, 'RIFF'); v.setUint32(4, 38, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
   v.setUint32(24, 8000, true); v.setUint32(28, 16000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, 2, true); v.setInt16(44, 0, true);
+  return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+})();
+
+const CHIME_WAV = (() => {
+  const sr = 22050, n = Math.round(sr * 0.6), b = new ArrayBuffer(44 + n * 2), v = new DataView(b);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) { const t = i / sr, f = t < 0.2 ? 880 : 1318.5, t0 = t < 0.2 ? t : t - 0.2; const env = Math.exp(-t0 * 7) * Math.min(1, t0 * 200); v.setInt16(44 + i * 2, Math.sin(2 * Math.PI * f * t) * env * 0.5 * 32767, true); }
   return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
 })();
 
@@ -1319,10 +1339,33 @@ GAMES.g7 = {
    ===================================================================== */
 const App = {
   audioReady: false, welcomeNext: false,
+  soundCheck() {
+    this.unlockAudio();
+    const panel = $('#checkPanel'); panel.hidden = false;
+    const chime = new Audio(CHIME_WAV); const p = chime.play(); if (p) p.catch(() => {});
+    Speech.say(['s:check']);
+    const row = (cls, mark, text) => `<li><span class="k ${cls}">${mark}</span><span>${text}</span></li>`;
+    const render = done => {
+      const voiceLine = !Speech.supported ? row('bad', '✗', 'Trình duyệt này không có chức năng đọc tiếng.')
+        : !Speech.voicesKnown ? (done ? row('bad', '✗', 'Không tìm thấy giọng đọc tiếng Việt trên máy.') : row('wait', '…', 'Đang tìm giọng đọc tiếng Việt trên máy…'))
+        : Speech.hasVi ? row('ok', '✓', 'Máy có giọng đọc tiếng Việt: ' + (Speech.voiceName || 'tiếng Việt') + '.')
+        : row('bad', '✗', 'Máy chưa có giọng đọc tiếng Việt.');
+      const spoke = Speech.heard ? row('ok', '✓', 'Trâu Con đã nói. Nếu vẫn không nghe thấy, hãy tăng âm lượng và tắt chế độ Im lặng.')
+        : done ? row('bad', '✗', 'Trâu Con chưa phát ra tiếng.') : row('wait', '…', 'Trâu Con đang thử nói…');
+      panel.innerHTML = '<ul>' + row('wait', '♪', 'Vừa phát một tiếng “ting ting”. Nếu nghe thấy tiếng này mà không nghe Trâu Con nói, lỗi nằm ở giọng đọc của máy.') + voiceLine + spoke + '</ul>' +
+        (done && !Speech.heard ? '<h3>Cách sửa trên iPad</h3><ol>' +
+          '<li>Mở trò chơi bằng <b>Safari</b> (không mở bên trong ứng dụng khác).</li>' +
+          '<li>Vuốt mở <b>Trung tâm điều khiển</b>, tắt chế độ <b>Im lặng</b> (biểu tượng chuông) và <b>Không làm phiền</b>, rồi tăng âm lượng.</li>' +
+          '<li>Vào <b>Cài đặt › Trợ năng › Nội dung được đọc › Giọng nói</b>, chọn <b>Tiếng Việt</b> và tải một giọng (ví dụ Linh).</li>' +
+          '<li>Tải lại trang rồi bấm <b>Kiểm tra âm thanh</b> lần nữa.</li></ol>' : '');
+    };
+    render(false); clearTimeout(this.checkTimer);
+    this.checkTimer = setTimeout(() => render(true), 3200);
+  },
   soundHelp(show) {
-    const msg = 'Chưa nghe thấy tiếng? Hãy tăng âm lượng, tắt chế độ im lặng của máy, rồi bấm loa lần nữa.';
+    const msg = 'Chưa nghe thấy tiếng? Hãy tắt chế độ Im lặng của máy, tăng âm lượng, rồi bấm loa lần nữa. Ở trang chính có nút “Kiểm tra âm thanh”.';
     const el = $('#soundHelp'); if (!el) return;
-    if (show && (this.helpDismissed || !$('#home').hidden && !$('#voiceNote').hidden)) return;
+    if (show && (this.helpDismissed || !$('#home').hidden)) return;
     $('#soundHelpText').textContent = msg; el.hidden = !show;
     clearTimeout(this.helpTimer); if (show) this.helpTimer = setTimeout(() => { el.hidden = true; }, 12000);
   },
@@ -1373,6 +1416,7 @@ const App = {
     window.__speechFail = () => { this.soundHelp(true); this.updateVoiceNote(true); };
     window.__speechOk = () => { this.soundHelp(false); this.updateVoiceNote(); };
     $('#btnStart').addEventListener('click', () => { this.unlockAudio(); this.welcomeNext = true; this.go('g1'); });
+    $('#btnCheck').addEventListener('click', () => this.soundCheck());
     $('#btnSayHero').addEventListener('click', e => { this.unlockAudio(); Speech.say(['s:welcome', 's:menu']); bounce(e.currentTarget, 'speaking', 1600); });
     $('#btnSay').addEventListener('click', e => { this.unlockAudio(); Speech.say(UI.guideIds); UI.mascot('nod'); bounce(e.currentTarget, 'speaking', 1600); });
     $('#heroTrau').addEventListener('click', () => { this.unlockAudio(); Speech.say(['s:welcome']); });
