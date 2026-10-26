@@ -44,10 +44,9 @@ button{font-family:inherit; color:inherit}
 
 /* ---------- Thanh thương hiệu ---------- */
 .brandbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:4px 10px}
-.logo{display:flex; align-items:center; gap:10px; color:var(--charcoal); text-decoration:none; border-radius:14px}
-.logo svg{width:50px; height:50px; flex:none}
-.logo .w1{display:block; font:800 21px/1 var(--font-display); letter-spacing:.2px}
-.logo .w2{display:block; font:700 18px/1.1 var(--font-display); color:var(--wood-deep)}
+.logo{display:flex; align-items:center; gap:8px; text-decoration:none; border-radius:14px}
+.logo .logo-trau{width:44px; height:auto; flex:none}
+.logo .logo-chu{height:56px; width:auto; display:block}
 .lesson-tag{font:800 14px/1.1 var(--font-display); letter-spacing:.6px; text-transform:uppercase; color:var(--wood-deep); background:var(--straw-soft); border:2px solid var(--straw); border-radius:999px; padding:7px 12px; white-space:nowrap}
 .copyright{
   position:fixed; left:0; right:0; bottom:0; z-index:80; pointer-events:none; text-align:center;
@@ -69,17 +68,17 @@ button{font-family:inherit; color:inherit}
 .btn[disabled]{opacity:.45; cursor:default}
 
 /* ---------- Trâu Con ---------- */
-.trau{display:block; width:100%; height:auto; overflow:visible}
-.trau .t-arm{transform-origin:64px 170px; transform-box:view-box}
-.trau .t-head{transform-origin:100px 176px; transform-box:view-box}
-.trau.wave .t-arm{animation:wave 1.15s ease-in-out infinite}
+/* Trâu Con là ảnh gốc của trường: chỉ chuyển động cả hình, không kéo giãn hay đổi tỉ lệ */
+.trau{display:block; width:100%; height:auto; transform-origin:50% 100%; user-select:none; -webkit-user-select:none; -webkit-user-drag:none; pointer-events:none}
+.trau.wave{animation:wave 1.6s ease-in-out infinite}
 .trau.bob{animation:bob 3.2s ease-in-out infinite}
-.trau.nod .t-head{animation:nod .45s ease-in-out 2}
-.trau.tilt .t-head{animation:tilt .7s ease-in-out}
-@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(24deg)}}
-@keyframes bob{50%{transform:translateY(-4px)}}
-@keyframes nod{50%{transform:translateY(6px) rotate(2deg)}}
-@keyframes tilt{30%{transform:rotate(-8deg)}70%{transform:rotate(6deg)}}
+.trau.nod{animation:nod .45s ease-in-out 2}
+.trau.tilt{animation:tilt .7s ease-in-out}
+@keyframes wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg) translateY(-3px)}75%{transform:rotate(4deg) translateY(-3px)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes nod{50%{transform:translateY(5px) scale(1.03,.97)}}
+@keyframes tilt{30%{transform:rotate(-7deg)}70%{transform:rotate(5deg)}}
+.pic img,.choice img,.target .mini img{width:100%; height:100%; object-fit:contain}
 
 .bubble{
   position:relative; min-width:0; background:var(--card); border:2.5px solid var(--straw); border-radius:20px;
@@ -290,6 +289,8 @@ button{font-family:inherit; color:inherit}
   .hero .bubble{font-size:16.5px}
   .hero .bubble::before{top:40px}
   .lesson-tag{display:none}
+  .logo .logo-chu{height:46px}
+  .logo .logo-trau{width:36px}
   .guide{gap:12px}
   .guide-trau{width:60px}
   .guide .bubble{font-size:16px; padding:10px 12px}
@@ -318,8 +319,8 @@ button{font-family:inherit; color:inherit}
 <div class="app">
   <header class="brandbar">
     <a class="logo" href="./" id="logoLink" aria-label="Trường Tiếng Việt Của Em, về trang chính">
-      <span id="logoMark"></span>
-      <span><span class="w1">Trường Tiếng Việt</span><span class="w2">Của Em</span></span>
+      <img class="logo-trau" src="img/trau-con.png" alt="" width="541" height="640">
+      <img class="logo-chu" src="img/logo-chu.png" alt="Trường Tiếng Việt Của Em" width="466" height="180">
     </a>
     <span class="lesson-tag">Bài 1</span>
   </header>
@@ -662,32 +663,9 @@ const Sfx = (() => {
 /* =====================================================================
    HÌNH VẼ — Trâu Con và tranh minh họa (nét than chì, màu thương hiệu)
    ===================================================================== */
-function trauSVG(cls = '', viewBox = '0 0 200 232') {
-  return `<svg class="trau ${cls}" viewBox="${viewBox}" role="img" aria-label="Trâu Con đội nón lá">
-<g class="t-arm-rest"><path d="M138 168 Q158 178 152 204" fill="none" stroke="#3A3B3C" stroke-width="17" stroke-linecap="round"/><circle cx="152" cy="206" r="9" fill="#5A5B5E"/></g>
-<rect x="70" y="194" width="22" height="32" rx="10" fill="#3A3B3C"/><rect x="108" y="194" width="22" height="32" rx="10" fill="#3A3B3C"/>
-<rect x="70" y="216" width="22" height="10" rx="5" fill="#5A5B5E"/><rect x="108" y="216" width="22" height="10" rx="5" fill="#5A5B5E"/>
-<ellipse cx="100" cy="180" rx="50" ry="36" fill="#3A3B3C"/><ellipse cx="100" cy="189" rx="29" ry="21" fill="#56585B"/>
-<g class="t-arm"><path d="M64 170 Q42 160 38 132" fill="none" stroke="#3A3B3C" stroke-width="17" stroke-linecap="round"/><circle cx="38" cy="128" r="10" fill="#5A5B5E"/></g>
-<g class="t-head">
-<path d="M54 96 C30 96 14 80 16 56 C26 72 40 78 60 78 Z" fill="#EFE5D2" stroke="#3A3B3C" stroke-width="3" stroke-linejoin="round"/>
-<path d="M146 96 C170 96 186 80 184 56 C174 72 160 78 140 78 Z" fill="#EFE5D2" stroke="#3A3B3C" stroke-width="3" stroke-linejoin="round"/>
-<ellipse cx="42" cy="110" rx="15" ry="9" transform="rotate(-18 42 110)" fill="#3A3B3C"/><ellipse cx="44" cy="110" rx="8" ry="4.5" transform="rotate(-18 44 110)" fill="#E9A99A"/>
-<ellipse cx="158" cy="110" rx="15" ry="9" transform="rotate(18 158 110)" fill="#3A3B3C"/><ellipse cx="156" cy="110" rx="8" ry="4.5" transform="rotate(18 156 110)" fill="#E9A99A"/>
-<ellipse cx="100" cy="114" rx="60" ry="52" fill="#3A3B3C"/>
-<circle cx="76" cy="110" r="17" fill="#FFFFFF"/><circle cx="124" cy="110" r="17" fill="#FFFFFF"/>
-<circle cx="78" cy="112" r="11" fill="#1F1D1C"/><circle cx="126" cy="112" r="11" fill="#1F1D1C"/>
-<circle cx="82" cy="106" r="4.5" fill="#FFFFFF"/><circle cx="130" cy="106" r="4.5" fill="#FFFFFF"/><circle cx="74" cy="116" r="2" fill="#FFFFFF"/><circle cx="122" cy="116" r="2" fill="#FFFFFF"/>
-<ellipse cx="56" cy="134" rx="10" ry="6" fill="#F2A08C" opacity=".85"/><ellipse cx="144" cy="134" rx="10" ry="6" fill="#F2A08C" opacity=".85"/>
-<path d="M48 78 Q42 152 100 164 Q158 152 152 78" fill="none" stroke="#E8917A" stroke-width="4" stroke-linecap="round"/>
-<ellipse cx="100" cy="144" rx="33" ry="21" fill="#C9B6A6"/>
-<ellipse cx="89" cy="140" rx="4" ry="5.5" fill="#3A3B3C"/><ellipse cx="111" cy="140" rx="4" ry="5.5" fill="#3A3B3C"/>
-<path d="M88 152 Q100 161 112 152" fill="none" stroke="#3A3B3C" stroke-width="3" stroke-linecap="round"/>
-<path d="M100 14 L170 76 Q100 92 30 76 Z" fill="#DDAA55" stroke="#9C7034" stroke-width="3" stroke-linejoin="round"/>
-<path d="M100 14 L58 82 M100 14 L80 86 M100 14 L120 86 M100 14 L142 82" stroke="#C68B59" stroke-width="2" opacity=".75"/>
-<path d="M62 50 Q100 60 138 50 M80 33 Q100 39 120 33" fill="none" stroke="#C68B59" stroke-width="2"/>
-<path d="M30 76 Q100 92 170 76" fill="none" stroke="#9C7034" stroke-width="4" stroke-linecap="round"/>
-</g></svg>`;
+const TRAU_SRC = 'img/trau-con.png';
+function trauSVG(cls = '') {
+  return `<img class="trau ${cls}" src="${TRAU_SRC}" alt="Trâu Con đội nón lá" width="541" height="640" draggable="false">`;
 }
 const SV = (inner, vb = '0 0 100 100') => `<svg viewBox="${vb}" fill="none" stroke="#3A3B3C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
 const FACE = (skin = '#F6D2B8') => `<circle cx="44" cy="54" r="26" fill="${skin}"/><path d="M18 50 C16 24 70 20 70 50 C60 38 40 34 26 42 C22 44 20 47 18 50 Z" fill="#3A3B3C"/>`;
@@ -720,7 +698,7 @@ const ICONS = {
   pencil: SV(`<path d="M22 78 L30 56 L70 16 L84 30 L44 70 Z" fill="#F2C14E"/><path d="M22 78 L30 56 L44 70 Z" fill="#F6E3BC"/><path d="M22 78 L25 70 L30 73 Z" fill="#3A3B3C"/><path d="M70 16 L84 30 L88 26 C90 24 90 20 88 18 L82 12 C80 10 76 10 74 12 Z" fill="#EEA48C"/><path d="M36 50 L76 10" stroke-width="2"/><path d="M14 90 C30 84 44 92 60 86" stroke="#D9573F" stroke-width="3" stroke-dasharray="2 6"/>`),
   aa: SV(`<rect x="6" y="18" width="50" height="62" rx="10" fill="#FFFCF6"/><rect x="44" y="22" width="50" height="62" rx="10" fill="#F6E3BC"/><text x="31" y="66" text-anchor="middle" font-family="Nunito,Segoe UI,Arial,sans-serif" font-weight="900" font-size="40" fill="#2A231F" stroke="none">Ă</text><text x="69" y="70" text-anchor="middle" font-family="Nunito,Segoe UI,Arial,sans-serif" font-weight="900" font-size="40" fill="#2A231F" stroke="none">ă</text>`),
   tone: SV(`<rect x="14" y="10" width="72" height="80" rx="14" fill="#F6E3BC"/><text x="50" y="76" text-anchor="middle" font-family="Nunito,Segoe UI,Arial,sans-serif" font-weight="900" font-size="58" fill="#2A231F" stroke="none">lá</text>`),
-  trau: trauSVG('', '0 0 200 232'),
+  trau: trauSVG(''),
   loco: kind => SV(`<path d="M4 50 L10 43 V55 Z" fill="#3A3B3C"/><rect x="10" y="24" width="44" height="31" rx="7" fill="${kind === 'vowel' ? '#DDAA55' : '#8DBF74'}"/><rect x="48" y="10" width="34" height="45" rx="7" fill="${kind === 'vowel' ? '#DDAA55' : '#8DBF74'}"/><rect x="55" y="18" width="20" height="14" rx="3" fill="#FFFCF6"/><rect x="16" y="9" width="11" height="16" rx="2" fill="#3A3B3C"/><circle cx="25" cy="59" r="9" fill="#3A3B3C"/><circle cx="64" cy="59" r="9" fill="#3A3B3C"/><circle cx="25" cy="59" r="3" fill="#E9E0D2" stroke="none"/><circle cx="64" cy="59" r="3" fill="#E9E0D2" stroke="none"/>`, '0 0 88 70')
 };
 const TONE_ICON = {
@@ -807,7 +785,7 @@ const UI = {
   get stage() { return $('#stage'); },
   guide(ids, silent) { this.guideIds = [].concat(ids); $('#guideText').textContent = Speech.textOf(this.guideIds); if (!silent) Speech.say(this.guideIds); },
   progress(t) { $('#gProg').textContent = t; $('#gProg').hidden = !t; },
-  mascot(cls) { const s = $('#guideTrau svg'); if (!s) return; s.classList.remove('nod', 'tilt'); void s.getBoundingClientRect(); s.classList.add(cls); setTimeout(() => s.classList.remove(cls), 1000); },
+  mascot(cls) { const s = $('#guideTrau .trau'); if (!s) return; s.classList.remove('nod', 'tilt'); void s.getBoundingClientRect(); s.classList.add(cls); setTimeout(() => s.classList.remove(cls), 1000); },
   ok(els, sayIds) { Sfx.ok(); [].concat(els || []).forEach(e => bounce(e, 'pop-ok')); this.mascot('nod'); if (sayIds !== null) Speech.say(sayIds || [pick(PRAISE)]); },
   no(els, sayIds) { this.mistakes++; Sfx.no(); [].concat(els || []).forEach(e => bounce(e, 'shake')); this.mascot('tilt'); Speech.say(sayIds || [pick(RETRY)]); },
   hint(el) { bounce(el, 'hint-pulse', 3100); },
@@ -1354,8 +1332,7 @@ const App = {
   closeFinish() { $('#finish').hidden = true; },
   init() {
     window.__voiceChanged = () => this.updateVoiceNote();
-    $('#logoMark').innerHTML = trauSVG('', '12 6 176 166');
-    $('#heroTrau').innerHTML = trauSVG('wave bob');
+    $('#heroTrau').innerHTML = trauSVG('wave');
     $('#guideTrau').innerHTML = trauSVG('bob');
     $('#finTrau').innerHTML = trauSVG('wave');
     $('#btnStart').addEventListener('click', () => {
