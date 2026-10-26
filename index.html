@@ -89,6 +89,15 @@ button{font-family:inherit; color:inherit}
   border-left:2.5px solid var(--straw); border-bottom:2.5px solid var(--straw); transform:translateY(-50%) rotate(45deg);
 }
 .bubble small{display:block; margin-top:4px; font-size:13px; font-weight:700; color:var(--ink-soft)}
+.bubble.talk{display:flex; align-items:center; gap:12px}
+.bubble.talk > span{flex:1; min-width:0}
+.say-btn{flex:none; display:grid; place-items:center; width:54px; height:54px; padding:0; border-radius:50%; background:var(--straw); border:3px solid var(--charcoal); box-shadow:0 3px 0 var(--charcoal); cursor:pointer}
+.say-btn svg{width:28px; height:28px}
+.say-btn:active{transform:translateY(2px); box-shadow:0 1px 0 var(--charcoal)}
+.say-btn.speaking{animation:ring 1s ease-in-out infinite}
+@keyframes ring{50%{box-shadow:0 3px 0 var(--charcoal),0 0 0 7px rgba(221,170,85,.45)}}
+.sound-help{position:fixed; z-index:70; left:max(16px,env(safe-area-inset-left,0px)); right:max(16px,env(safe-area-inset-right,0px)); top:calc(6px + env(safe-area-inset-top,0px)); max-width:640px; margin:0 auto; display:flex; align-items:center; gap:12px; font-size:15px; font-weight:700; line-height:1.35; color:var(--peach-ink); background:var(--peach); border:2.5px solid var(--peach-ink); border-radius:16px; padding:10px 12px 10px 16px; box-shadow:var(--shadow)}
+.sound-help span{flex:1; min-width:0}
 
 /* ---------- Trang chủ ---------- */
 .hero{display:grid; grid-template-columns:minmax(150px,240px) minmax(0,1fr); gap:clamp(12px,3vw,32px); align-items:center; padding-block:6px 18px}
@@ -294,6 +303,8 @@ button{font-family:inherit; color:inherit}
   .guide{gap:12px}
   .guide-trau{width:60px}
   .guide .bubble{font-size:16px; padding:10px 12px}
+  .say-btn{width:46px; height:46px}
+  .say-btn svg{width:24px; height:24px}
   .poem-cols{grid-template-columns:1fr}
   .pairs{grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
   .loco{width:62px; font-size:12px}
@@ -333,9 +344,9 @@ button{font-family:inherit; color:inherit}
         <div>
           <p class="eyebrow">Bài 1 · Lớp học tiếng Việt và văn hóa truyền thống</p>
           <h1 id="homeTitle">Bảng chữ cái, nguyên âm và phụ âm</h1>
-          <div class="bubble" id="heroBubble">Chào các bạn! Mình là Trâu Con. Hôm nay mình cùng các bạn học Bài 1 nhé!</div>
+          <div class="bubble talk" id="heroBubble"><span>Chào các bạn! Mình là Trâu Con. Hôm nay mình cùng các bạn học Bài 1 nhé!</span><button class="say-btn" id="btnSayHero" type="button" aria-label="Nghe Trâu Con chào"></button></div>
           <div class="hero-actions">
-            <button class="btn" id="btnStart" type="button">Bắt đầu</button>
+            <button class="btn" id="btnStart" type="button">Bắt đầu chơi ›</button>
           </div>
           <p class="voice-note" id="voiceNote" hidden></p>
         </div>
@@ -353,7 +364,7 @@ button{font-family:inherit; color:inherit}
       </div>
       <div class="guide">
         <button class="guide-trau" id="guideTrau" type="button" aria-label="Nghe Trâu Con nói lại"></button>
-        <div class="bubble" aria-live="polite"><span id="guideText"></span><small>Chạm vào Trâu Con để nghe lại nhé</small></div>
+        <div class="bubble talk" aria-live="polite"><span><span id="guideText"></span><small>Bấm loa hoặc chạm vào Trâu Con để nghe lại</small></span><button class="say-btn" id="btnSay" type="button" aria-label="Nghe hướng dẫn"></button></div>
       </div>
       <div class="levels" id="gLevels"></div>
       <div class="stage" id="stage"></div>
@@ -375,6 +386,7 @@ button{font-family:inherit; color:inherit}
   </div>
 </div>
 
+<div class="sound-help" id="soundHelp" role="status" hidden><span id="soundHelpText"></span><button class="btn small ghost" id="soundHelpClose" type="button">Đã hiểu</button></div>
 <p class="copyright">Copyrighted by CVCEC Trường Tiếng Việt Của Em 2026</p>
 
 <script>
@@ -517,6 +529,7 @@ const PHRASES = {
 };
 const PRAISE = ['s:ok1', 's:ok2', 's:ok3', 's:ok4', 's:ok5'];
 const RETRY = ['s:retry1', 's:retry2', 's:retry3'];
+const SPEAKER = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h5l7-6v20l-7-6H5z" fill="#3A3B3C"/><path d="M21 11.5c1.6 1.2 2.5 2.7 2.5 4.5s-.9 3.3-2.5 4.5M24.5 8c2.6 2 4 4.9 4 8s-1.4 6-4 8" fill="none" stroke="#3A3B3C" stroke-width="2.6" stroke-linecap="round"/></svg>';
 
 // Các nét cơ bản, đơn vị: ô li; y = 0 là đường kẻ dưới, y âm là phía trên.
 const STROKES = [
@@ -555,7 +568,7 @@ function clipFile(id) {
    ===================================================================== */
 const Speech = (() => {
   const synth = ('speechSynthesis' in window) ? window.speechSynthesis : null;
-  let voice = null, maleVoice = false, hasVi = false, voicesKnown = false, files = null, token = 0, unlocked = false;
+  let voice = null, maleVoice = false, hasVi = false, voicesKnown = false, files = null, token = 0, unlocked = false, heard = false;
   const audio = new Audio(); audio.preload = 'auto';
   function pickVoice() {
     if (!synth) return;
@@ -568,7 +581,10 @@ const Speech = (() => {
     maleVoice = !!male;
     if (window.__voiceChanged) window.__voiceChanged();
   }
-  if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+  if (synth) {
+    pickVoice(); synth.onvoiceschanged = pickVoice;
+    let tries = 0; const poll = setInterval(() => { if (voicesKnown || ++tries > 24) clearInterval(poll); else pickVoice(); }, 250);
+  }
   fetch('audio/manifest.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null)
     .then(j => { if (j && Array.isArray(j.files) && j.files.length) { files = new Set(j.files); if (window.__voiceChanged) window.__voiceChanged(); } }).catch(() => {});
   function textOf(ids) {
@@ -585,17 +601,17 @@ const Speech = (() => {
     const out = []; let cur = [], len = 0;
     for (const id of ids) {
       const t = CLIPS[id] ?? id; cur.push(id); len += t.length;
-      if (len > 130 && /[.!?]$/.test(t.trim())) { out.push(textOf(cur)); cur = []; len = 0; }
+      if (len > 90 && /[.!?]$/.test(t.trim())) { out.push(textOf(cur)); cur = []; len = 0; }
     }
     if (cur.length) out.push(textOf(cur));
     return out;
   }
   function stop() { token++; try { audio.pause(); } catch (e) {} if (synth && (synth.speaking || synth.pending)) synth.cancel(); }
-  function unlock() {
-    if (unlocked) return; unlocked = true;
-    try { audio.src = SILENT_WAV; const p = audio.play(); if (p) p.catch(() => {}); } catch (e) {}
-    if (synth) { try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; u.lang = 'vi-VN'; synth.speak(u); } catch (e) {} }
+  function unlock() { // gọi trong mỗi lần chạm cho tới khi trình duyệt cho phép phát tiếng
+    if (unlocked || !audio.paused) return;
+    try { audio.src = SILENT_WAV; const p = audio.play(); if (p) p.then(() => { unlocked = true; }).catch(() => {}); } catch (e) {}
   }
+  const fail = () => { if (!heard && window.__speechFail) window.__speechFail(); };
   function playFile(name, my) {
     return new Promise(res => {
       if (my !== token) return res();
@@ -606,15 +622,19 @@ const Speech = (() => {
   }
   function speakText(text, my) {
     return new Promise(res => {
-      if (!synth || !hasVi || my !== token || !text) return res();
+      if (!synth || my !== token || !text) return res();
+      if (!voicesKnown) pickVoice();
+      if (voicesKnown && !hasVi) { fail(); return res(); } // máy không có giọng tiếng Việt
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'vi-VN'; if (voice) u.voice = voice;
+      u.lang = 'vi-VN'; if (voice) { try { u.voice = voice; } catch (e) {} }
       u.rate = 0.82; u.pitch = maleVoice ? 1.35 : 1.08;
-      let done = false; const fin = () => { if (!done) { done = true; res(); } };
+      let done = false, started = false; const fin = () => { if (!done) { done = true; res(); } };
+      u.onstart = () => { started = true; if (!heard) { heard = true; if (window.__speechOk) window.__speechOk(); } };
       u.onend = fin; u.onerror = fin;
       try { synth.resume(); } catch (e) {}
       synth.speak(u);
-      setTimeout(fin, 1800 + text.length * 150);
+      setTimeout(() => { if (!started && my === token) fail(); }, 2600);
+      setTimeout(fin, 2600 + text.length * 150);
     });
   }
   async function say(ids) {
@@ -627,10 +647,10 @@ const Speech = (() => {
       for (const n of names) { if (my !== token) return; await playFile(n, my); }
       return;
     }
-    if (wasBusy) await new Promise(r => setTimeout(r, 70));
+    if (wasBusy) await new Promise(r => setTimeout(r, 60));
     for (const c of chunks(ids)) { if (my !== token) return; await speakText(c, my); }
   }
-  return { say, stop, unlock, textOf, get hasVi() { return hasVi; }, get voicesKnown() { return voicesKnown; }, get hasRecordings() { return !!files; }, get supported() { return !!synth; } };
+  return { say, stop, unlock, textOf, get hasVi() { return hasVi; }, get voicesKnown() { return voicesKnown; }, get hasRecordings() { return !!files; }, get supported() { return !!synth; }, get heard() { return heard; } };
 })();
 const SILENT_WAV = (() => {
   const b = new ArrayBuffer(46), v = new DataView(b); const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
@@ -783,7 +803,12 @@ function asZone(el, picker, tryDrop) {
 const UI = {
   mistakes: 0, guideIds: [],
   get stage() { return $('#stage'); },
-  guide(ids, silent) { this.guideIds = [].concat(ids); $('#guideText').textContent = Speech.textOf(this.guideIds); if (!silent) Speech.say(this.guideIds); },
+  guide(ids, silent) {
+    this.guideIds = [].concat(ids);
+    if (App.welcomeNext) { App.welcomeNext = false; this.guideIds = ['s:welcome', ...this.guideIds]; }
+    $('#guideText').textContent = Speech.textOf(this.guideIds);
+    if (!silent) Speech.say(this.guideIds);
+  },
   progress(t) { $('#gProg').textContent = t; $('#gProg').hidden = !t; },
   mascot(cls) { const s = $('#guideTrau .trau'); if (!s) return; s.classList.remove('nod', 'tilt'); void s.getBoundingClientRect(); s.classList.add(cls); setTimeout(() => s.classList.remove(cls), 1000); },
   ok(els, sayIds) { Sfx.ok(); [].concat(els || []).forEach(e => bounce(e, 'pop-ok')); this.mascot('nod'); if (sayIds !== null) Speech.say(sayIds || [pick(PRAISE)]); },
@@ -1293,10 +1318,18 @@ GAMES.g7 = {
    ỨNG DỤNG: trang chính, điều hướng, mở khóa âm thanh
    ===================================================================== */
 const App = {
-  audioReady: false,
+  audioReady: false, welcomeNext: false,
+  soundHelp(show) {
+    const msg = 'Chưa nghe thấy tiếng? Hãy tăng âm lượng, tắt chế độ im lặng của máy, rồi bấm loa lần nữa.';
+    const el = $('#soundHelp'); if (!el) return;
+    if (show && (this.helpDismissed || !$('#home').hidden && !$('#voiceNote').hidden)) return;
+    $('#soundHelpText').textContent = msg; el.hidden = !show;
+    clearTimeout(this.helpTimer); if (show) this.helpTimer = setTimeout(() => { el.hidden = true; }, 12000);
+  },
   unlockAudio() { Sfx.unlock(); Speech.unlock(); },
-  updateVoiceNote() {
+  updateVoiceNote(failed) {
     const n = $('#voiceNote'); if (!n) return;
+    if (failed && !Speech.hasRecordings && !Speech.heard && !(Speech.voicesKnown && !Speech.hasVi) && Speech.supported) { n.textContent = 'Chưa nghe thấy Trâu Con nói? Hãy tăng âm lượng, tắt chế độ im lặng của máy, rồi bấm nút loa lần nữa.'; n.hidden = false; return; }
     if (Speech.hasRecordings) { n.hidden = true; return; }
     if (!Speech.supported) { n.textContent = 'Trình duyệt này chưa đọc được tiếng. Các bạn vẫn chơi được, chỉ là Trâu Con không nói. Hãy thử mở bằng Safari, Chrome hoặc Edge.'; n.hidden = false; return; }
     if (Speech.voicesKnown && !Speech.hasVi) { n.textContent = 'Máy này chưa có giọng đọc tiếng Việt nên Trâu Con chưa nói được. Các bạn vẫn chơi được bình thường. Thầy cô, bố mẹ có thể cài thêm giọng tiếng Việt trong phần cài đặt giọng nói của máy.'; n.hidden = false; return; }
@@ -1335,15 +1368,18 @@ const App = {
     $('#heroTrau').innerHTML = trauSVG('wave');
     $('#guideTrau').innerHTML = trauSVG('bob');
     $('#finTrau').innerHTML = trauSVG('wave');
-    $('#btnStart').addEventListener('click', () => {
-      this.unlockAudio(); Speech.say(['s:welcome', 's:menu']);
-      $('#menuTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    $('#btnSay').innerHTML = SPEAKER; $('#btnSayHero').innerHTML = SPEAKER;
+    $('#soundHelpClose').addEventListener('click', () => { this.helpDismissed = true; $('#soundHelp').hidden = true; });
+    window.__speechFail = () => { this.soundHelp(true); this.updateVoiceNote(true); };
+    window.__speechOk = () => { this.soundHelp(false); this.updateVoiceNote(); };
+    $('#btnStart').addEventListener('click', () => { this.unlockAudio(); this.welcomeNext = true; this.go('g1'); });
+    $('#btnSayHero').addEventListener('click', e => { this.unlockAudio(); Speech.say(['s:welcome', 's:menu']); bounce(e.currentTarget, 'speaking', 1600); });
+    $('#btnSay').addEventListener('click', e => { this.unlockAudio(); Speech.say(UI.guideIds); UI.mascot('nod'); bounce(e.currentTarget, 'speaking', 1600); });
     $('#heroTrau').addEventListener('click', () => { this.unlockAudio(); Speech.say(['s:welcome']); });
     $('#guideTrau').addEventListener('click', () => { this.unlockAudio(); Speech.say(UI.guideIds); UI.mascot('nod'); });
     $('#btnHome').addEventListener('click', () => this.go(''));
     $('#logoLink').addEventListener('click', e => { e.preventDefault(); this.go(''); });
-    document.addEventListener('pointerdown', () => this.unlockAudio(), { capture: true, once: true });
+    ['pointerdown', 'pointerup', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, () => this.unlockAudio(), { capture: true, passive: true }));
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#finish').hidden) { this.closeFinish(); } });
     window.addEventListener('popstate', () => this.route());
     this.route();

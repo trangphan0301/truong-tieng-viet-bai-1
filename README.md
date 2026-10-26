@@ -22,9 +22,10 @@ Muốn mở thẳng một trò chơi, thêm mã ở cột cuối vào sau đư�
 
 ## Cách chơi
 
-- Bấm **Bắt đầu** để nghe Trâu Con chào, rồi chọn trò chơi.
+- Bấm **Bắt đầu chơi** để nghe Trâu Con chào và vào trò chơi 1, hoặc chọn thẳng một trò chơi trong danh sách.
 - Kéo – thả bằng ngón tay, chuột hoặc bút. Các em nhỏ chưa kéo giỏi có thể **chạm vào chữ rồi chạm vào chỗ cần đặt**.
-- Chạm vào chữ, tranh hoặc câu thơ để nghe đọc. **Chạm vào Trâu Con để nghe lại hướng dẫn.** Không có nút loa.
+- Mỗi câu hướng dẫn được Trâu Con đọc to ngay khi hiện ra, để các em chưa đọc được chữ vẫn nghe và làm theo. Mỗi màn có **một nút loa** cạnh lời hướng dẫn (hoặc chạm vào Trâu Con) để nghe lại.
+- Chạm vào chữ, tranh hoặc câu thơ để nghe đọc từng chữ, từng tiếng, từng câu.
 - Đúng: tiếng “ting”, Trâu Con gật đầu, lời khen. Sai: thẻ rung nhẹ, “Thử lại nhé!”. Sai hai lần, chỗ đúng sẽ nhấp nháy gợi ý.
 - Không trừ điểm. Hết mỗi trò chơi, các em nhận 1–3 sao; sao được nhớ trên chính thiết bị đó.
 
@@ -32,7 +33,7 @@ Muốn mở thẳng một trò chơi, thêm mã ở cột cuối vào sau đư�
 
 Trâu Con luôn xưng **“mình”** và gọi học sinh là **“các bạn”**. Chữ cái được đọc **theo âm**: a, á (ă), ớ (â), bờ, cờ, dờ, đờ…, ca (k), quy (q), i dài (y).
 
-Hiện tại trò chơi dùng **giọng đọc tiếng Việt có sẵn trên máy**, đọc chậm (tốc độ 0,82). Nếu máy có giọng nam (ví dụ “NamMinh” trên Microsoft Edge), trò chơi chọn giọng đó và nâng cao giọng một chút cho giống giọng bé trai. Giọng thật sự nghe ra sao tùy thiết bị: iPad thường chỉ có giọng nữ “Linh”.
+Hiện tại trò chơi dùng **giọng đọc tiếng Việt có sẵn trên máy**, đọc chậm (tốc độ 0,82). Nếu máy không phát ra tiếng, trò chơi hiện lời nhắc kiểm tra âm lượng và chế độ im lặng. Nếu máy có giọng nam (ví dụ “NamMinh” trên Microsoft Edge), trò chơi chọn giọng đó và nâng cao giọng một chút cho giống giọng bé trai. Giọng thật sự nghe ra sao tùy thiết bị: iPad thường chỉ có giọng nữ “Linh”.
 
 ### Thay bằng đúng giọng trong video của Trâu Con
 
